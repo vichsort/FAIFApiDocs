@@ -3,32 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FAIF API — Docs Interativo (localhost)</title>
+  <title>FAIF API — Docs Interativo</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <style>
-    body { background: #1a1a1a; }
-    .sidebar { max-height: 86vh; overflow:auto; }
-    .panel-right {
-      background: #2a2a2a;
-      color: #fff; padding: 1.25rem; border-radius: .5rem;
-      min-height: 86vh;
-    }
-    .response-sample {
-      background: #1a1a1a; color: #dbeafe; padding: .75rem; border-radius:.375rem;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:.9rem;
-      overflow:auto; max-height: 40vh;
-    }
-    .try-btn { background: #0b1220; color:#ff6b35; border: none; font-weight:700; }
-    .method-get { background:#198754; color:#fff; padding:.15rem .6rem; border-radius:.3rem; font-size:.8rem; }
-    .method-post { background:#0d6efd; color:#fff; padding:.15rem .6rem; border-radius:.3rem; font-size:.8rem; }
-    .route-item { cursor:pointer; }
-    .doc-card { background: #fff; border-radius:.5rem; padding: .9rem; box-shadow: 0 6px 18px rgba(20,20,30,0.05); }
-    .muted-small { color: rgba(255,255,255,0.8); font-size:.9rem; }
+    :root { --c-dark: #1a1a1a; --c-darker: #0b1220; --c-medium: #2a2a2a; --c-orange: #ff6b35; --c-blue: #dbeafe; }
+    body { background: var(--c-dark); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; }
+    .sidebar { max-height: 90vh; overflow-y: auto; }
+    .panel-left { background: var(--c-medium); color: #fff; padding: 1.25rem; border-radius: .5rem; min-height: 90vh; }
+    .response-sample { background: var(--c-dark); color: var(--c-blue); padding: .75rem; border-radius:.375rem; font-family: "Roboto Mono", monospace; font-size:.9rem; overflow:auto; max-height: 40vh; }
+    .try-btn { background: var(--c-darker); color:var(--c-orange); border: 1px solid var(--c-orange); font-weight:700; }
+    .try-btn:hover { background: var(--c-orange); color: var(--c-darker); }
+    .method-get { background:#198754; color:#fff; padding:.15rem .6rem; border-radius:.3rem; font-size:.8rem; font-family: monospace; }
+    .doc-card { background: var(--c-dark); border-radius:.5rem; padding: 1rem; }
+    .muted-small { color: rgba(255,255,255,0.7); font-size:.9rem; }
     pre.json { margin:0; white-space:pre-wrap; word-break:break-word; }
-    .param-type { font-weight:700; color: #ff6b35; }
-    .curl-sample { background:#0b1220; color:#ff6b35; padding:.6rem; border-radius:.25rem; font-family:monospace; font-size:.85rem; overflow:auto; }
-    .note { font-size:.9rem; color:#dbeafe; }
+    .param-type { font-weight:700; color: var(--c-orange); font-family: monospace; }
+    .curl-sample { background:var(--c-darker); color:var(--c-orange); padding:.75rem; border-radius:.25rem; font-family:monospace; font-size:.85rem; overflow:auto; white-space: pre; }
+    .note { font-size:.9rem; color:var(--c-blue); background: rgba(219, 234, 254, 0.1); padding: .75rem; border-radius: .375rem; }
+    .list-group-item-action { transition: background-color 0.2s ease-in-out; }
+    .accordion-button { background: #333; color: white; }
+    .accordion-button:not(.collapsed) { background: #444; color: white; }
+    .accordion-button::after { filter: invert(1) grayscale(100%); }
+    .list-group-item { background-color: var(--c-dark); border-color: var(--c-medium); color: white; }
+    .list-group-item-action:hover { background-color: var(--c-medium); }
+    .group-header { font-weight: bold; color: var(--c-orange); margin-top: 1rem; margin-bottom: 0.5rem; padding-left: 0.5rem; }
   </style>
 </head>
 <body>
@@ -36,513 +34,428 @@
 <div class="container-fluid py-4">
   <div class="row gx-4">
     <div class="col-lg-5">
-      <div class="panel-right">
-        <div class="d-flex justify-content-between mb-3 align-items-start">
+      <div id="interactionPanel" class="panel-left sticky-top">
+        <div class="d-flex justify-content-between mb-2 align-items-start">
           <div>
             <div class="small muted-small">ENDPOINT</div>
-            <h5 id="panelEndpoint" class="mb-0">/faif/deputados/{deputado}</h5>
-            <div id="endpointHint" class="small muted-small">Clique numa rota à direita</div>
+            <h5 id="panelEndpoint" class="mb-0 text-break">/health</h5>
           </div>
           <div class="text-end">
             <div id="methodBadge" class="method-get">GET</div>
           </div>
         </div>
+        <div id="endpointDescription" class="small muted-small mb-3">Verifica o status da API.</div>
 
-        <div class="mb-3 doc-card p-3" style="background: #1a1a1a;">
+        <div class="doc-card mb-3">
           <div class="section-title mb-2"><strong>Request</strong></div>
+          <div id="requiredHeaders" class="note mb-3" style="display: none;"></div>
+          <div id="paramAccordion" class="accordion mb-2"></div>
+        </div>
 
-          <div id="paramAccordion" class="accordion mb-2">
-            <!-- coisas aque -->
-          </div>
+        <div class="doc-card mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+             <div><button id="tryBtn" class="btn try-btn btn-sm">Try it</button></div>
+             <div class="text-end"><div id="statusBadge"></div></div>
+            </div>
+        </div>
 
-          <div class="mb-2">
-            <label class="form-label small text-white-50">Corpo (JSON) — opcional</label>
-            <textarea id="bodyInput" class="form-control form-control-sm" rows="4" placeholder='{"key": "value"}'></textarea>
-          </div>
-
-          <div class="mb-2">
-            <label class="form-label small text-white-50">Query string adicional</label>
-            <input id="extraQuery" type="text" class="form-control form-control-sm" placeholder="ex: foo=bar&x=1">
-          </div>
-
+        <div class="mb-3">
           <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <button id="tryBtn" class="btn try-btn btn-sm">Try it</button>
-            </div>
-            <div class="text-end">
-              <div id="statusBadge"></div>
-            </div>
+            <strong>Response</strong>
+            <div id="meta" class="muted-small">Status: — | Time: — ms</div>
           </div>
-        </div>
-
-        <div class="mb-3">
-          <div class="section-title"><strong>Response</strong></div>
-          <div id="meta" class="mb-2 muted-small">Status: — | Time: — ms</div>
-          <div id="responseArea" class="response-sample"><pre id="responseJson" class="json">Selecione uma rota e clique em Try it.</pre></div>
-        </div>
-
-        <div class="mb-3">
-          <div class="section-title"><strong>Request sample (curl)</strong></div>
-          <div id="curlSample" class="curl-sample">—</div>
+          <div id="responseArea" class="response-sample mt-2"><pre id="responseJson" class="json">Selecione uma rota e clique em "Try it".</pre></div>
         </div>
 
         <div>
-          <div class="section-title"><strong>Erro / Dicas</strong></div>
-          <div id="errorHelp" class="note">Se surgir erro CORS: verifique cabeçalhos CORS no servidor, ou use `curl` no terminal.</div>
+          <div class="section-title"><strong>cURL Sample</strong></div>
+          <div id="curlSample" class="curl-sample mt-2">—</div>
         </div>
       </div>
     </div>
 
     <div class="col-lg-7">
-      <div class="doc-card sidebar p-3">
+      <div class="sidebar p-3" style="background: var(--c-medium); border-radius: .5rem;">
         <div class="d-flex align-items-center justify-content-between mb-3">
           <div>
-            <h4 class="mb-0">FAIF API — Documentação interativa</h4>
-            <div class="text-muted small">Clique em uma rota para ver detalhes e testar ao vivo.</div>
+            <h4 class="mb-0 text-white">FAIF API</h4>
+            <div class="text-white-50 small">Documentação interativa para a API do FAIF.</div>
           </div>
           <div class="text-end">
-            <div class="mb-1"><small class="text-muted">Você pode encontrar a API em</small></div>
-            <div class="small text-warning"><a href="https://github.com/vichsort/FAIFApi" target="_blank">Github</a></div>
+            <div class="mb-1"><small class="text-white-50">Repositório da API</small></div>
+            <div class="small"><a href="https://github.com/vichsort/FAIFApi" target="_blank" class="text-warning">GitHub</a></div>
           </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label small">Auth / Headers (futuro)</label>
+        <div class="mb-3 doc-card">
+          <label class="form-label small"><strong>Headers Customizados</strong></label>
           <div class="input-group input-group-sm mb-2">
-            <input id="authHeaderKey" class="form-control" placeholder="Header name (ex: Authorization or chave-api-dados)">
-            <input id="authHeaderValue" class="form-control" placeholder="Header value (ex: Bearer TOKEN or my-key)">
-            <button id="addHeaderBtn" class="btn btn-outline-secondary btn-sm">Adicionar</button>
+            <input id="authHeaderKey" class="form-control" placeholder="Header (ex: chave-api-dados)">
+            <input id="authHeaderValue" class="form-control" placeholder="Valor (ex: SEU_TOKEN)">
+            <button id="addHeaderBtn" class="btn btn-outline-warning btn-sm">Adicionar</button>
           </div>
-          <div id="customHeadersList" class="small text-muted"></div>
+          <div id="customHeadersList" class="small text-white-50"></div>
         </div>
-
-        <hr>
-
-        <div id="routesList" class="list-group">
-          <!-- routes populated by JS -->
-        </div>
-
-        <hr class="my-3">
-
-        <div class="small text-muted">
-          <strong>Observações:</strong>
-          <ul>
-            <li>No futuro, o sistema fará requisições REAIS para a api (FAIF) por meio de um endpoint de teste. No momento, as requisições são simuladas.</li>
-            <li>As rotas são baseadas nos <code>blueprints</code> de rotas dentro da API</li>
-            <li>Você pode acessar a API por meio do <a href="https://github.com/vichsort/FAIFApi" target="_blank">github oficial do projeto</a>.</li>
-
-          </ul>
+        <hr class="border-secondary">
+        <div id="routesList" class="list-group"></div>
+        <hr class="my-3 border-secondary">
+        <div class="small text-white-50">
+            <p>Este documento interativo permite testar a API FAIFApi em tempo real. As chamadas são feitas para o endereço configurado em <code>BASE_URL</code> no código-fonte.</p>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-/* =========================
-   Rotas (baseado no app.py)
-   Cada rota contém:
-     utilidade, method, path (com {param}), params, requestSample, responseSample, errorSample
-   ========================= */
+// ===================================================================================
+//  CONFIGURAÇÃO DA API E ENDPOINTS
+//  Esta seção contém a definição de todos os endpoints da FAIF API.
+// ===================================================================================
 
-/* HARD-CODED API BASE */
 const BASE_URL = 'http://localhost:5000';
 
-const ROUTES = [
+const API_ENDPOINTS = [
   {
-    utilidade: "Status da API",
-    method: "GET",
-    path: "/health",
-    params: [],
-    requestSample: "GET /health",
-    responseSample: { status: "ok", uptime_seconds: 123.45 },
-    errorSample: { error: "Health check failed", error_code: "HEALTH_FAIL" }
+    groupName: 'Geral',
+    routes: [
+      {
+        utilidade: "Health Check",
+        method: "GET",
+        path: "/health",
+        description: "Verifica a saúde e o tempo de atividade da API.",
+        params: [],
+        responseSample: { ok: true, data: { status: "ok", uptime_seconds: 123.45 } },
+        errorSample: { ok: false, error: { code: "HEALTH_FAIL", message: "Health check failed.", details: null } }
+      }
+    ]
   },
-
-  
   {
-    utilidade: "Histórico",
-    method: "GET",
-    path: "/faif/historico",
-    params: [{ name: "limit", in: "query", type: "integer", example: "20", required: false }],
-    requestSample: "GET /faif/historico?limit=20",
-    responseSample: [{ id: 101, endpoint: "/faif/cnpj/123...", parametros: { cnpj: "123..." }, ip_cliente: "10.0.0.1", data_hora: "2025-08-13T18:05:00" }],
-    errorSample: { error: "Parâmetro 'limit' inválido.", error_code: "INVALID_PARAM" }
+    groupName: 'Consultas Gerais',
+    routes: [
+      {
+        utilidade: "Consulta de CEP",
+        method: "GET",
+        path: "/faif/cep/{cep}",
+        description: "Consulta um endereço a partir de um CEP.",
+        params: [{ name: "cep", in: "path", type: "string", example: "01001000", required: true }],
+        responseSample: { ok: true, data: { cep: "string", state: "string", city: "string", neighborhood: "string", street: "string", service: "string" } },
+        errorSample: { ok: false, error: { code: "CEP_NOT_FOUND", message: "CEP não encontrado.", details: "..." } }
+      },
+      {
+        utilidade: "Consulta de CNPJ",
+        method: "GET",
+        path: "/faif/cnpj/{cnpj}",
+        description: "Consulta dados de uma empresa a partir de um CNPJ e retorna os dados normalizados.",
+        params: [{ name: "cnpj", in: "path", type: "string", example: "06990590000123", required: true }],
+        responseSample: { ok: true, data: { cnpj: "string", nome: "string", fantasia: "string", natureza_juridica: "string", porte: "string", abertura: "string", atividade_principal: [{ code: "string", text: "string" }], atividades_secundarias: [{ code: "string", text: "string" }], logradouro: "string", numero: "string", complemento: "string", bairro: "string", municipio: "string", uf: "string", cep: "string", situacao: "string", data_situacao: "string", capital_social: "string", motivo_situacao: "string", situacao_especial: "string", data_situacao_especial: "string", qsa: [{ qual: "string", nome: "string" }] } },
+        errorSample: { ok: false, error: { code: "CNPJ_NOT_FOUND", message: "CNPJ não encontrado.", details: "..." } }
+      },
+      {
+        utilidade: "Busca de Deputados",
+        method: "GET",
+        path: "/faif/deputados/{deputado}",
+        description: "Busca deputados federais por nome e retorna uma lista normalizada.",
+        params: [{ name: "deputado", in: "path", type: "string", example: "tiririca", required: true }],
+        responseSample: { ok: true, data: [{ nome: "string", email: "string", id: 0, siglaPartido: "string", siglaUf: "string", urlFoto: "string" }] },
+        errorSample: { ok: false, error: { code: "DEPUTADO_NOT_FOUND", message: "Deputado(s) não encontrado(s).", details: "..." } }
+      },
+      {
+        utilidade: "Pesquisa no IBGE",
+        method: "GET",
+        path: "/faif/ibge",
+        description: "Busca metadados de pesquisas do IBGE a partir de um termo.",
+        params: [{ name: "q", in: "query", type: "string", example: "pib", required: true }],
+        responseSample: { ok: true, data: { items: [{ id: "string", nome: "string", apelido: "string", periodicidade: "string", assunto: [] }] } },
+        errorSample: { ok: false, error: { code: "IBGE_NOT_FOUND", message: "Nenhum resultado encontrado no IBGE.", details: "..." } }
+      },
+    ]
   },
-
   {
-    utilidade: "Deputados",
-    method: "GET",
-    path: "/faif/deputados/{deputado}",
-    params: [
-      { name: "deputado", in: "path", type: "string", example: "kim", required: true }
-    ],
-    requestSample: "GET /faif/deputados/kim",
-    responseSample: [{ nome: "Kim Souza", email: "kim@exemplo.gov.br", id: 111, siglaPartido: "ABC", siglaUf: "SP", urlFoto: "" }],
-    errorSample: { error: "Deputado(s) não encontrado(s).", error_code: "DEPUTADO_NOT_FOUND" }
+    groupName: 'Portal de Serviços',
+    routes: [
+      {
+        utilidade: "Consulta de Órgão",
+        method: "GET",
+        path: "/faif/servicos/orgao/{cod_siorg}",
+        description: "Consulta dados de um órgão público pelo código SIORG.",
+        params: [{ name: "cod_siorg", in: "path", type: "string", example: "24", required: true }],
+        responseSample: { ok: true, data: { id: "string", nome: "string", sigla: "string", conteudo: "string", url: "string" } },
+        errorSample: { ok: false, error: { code: "SIORG_NOT_FOUND", message: "Código SIORG não encontrado.", details: "..." } }
+      },
+      {
+        utilidade: "Consulta de Serviço",
+        method: "GET",
+        path: "/faif/servicos/servico/{cod_servico}",
+        description: "Consulta dados de um serviço público específico.",
+        params: [{ name: "cod_servico", in: "path", type: "string", example: "obter-o-passaporte", required: true }],
+        responseSample: { ok: true, data: { id: "string", nome: "string", descricao: "string", orgao: { id: "string", nome: "string" }, etapas: [] } },
+        errorSample: { ok: false, error: { code: "SERVICO_NOT_FOUND", message: "Código do serviço não encontrado.", details: "..." } }
+      }
+    ]
   },
-
   {
-    utilidade: "CEP",
-    method: "GET",
-    path: "/faif/cep/{cep}",
-    params: [{ name: "cep", in: "path", type: "string", example: "01001-000", required: true }],
-    requestSample: "GET /faif/cep/01001-000",
-    responseSample: { cep: "01001-000", logradouro: "Praça da Sé", bairro: "Sé", municipio: "São Paulo", uf: "SP" },
-    errorSample: { error: "CEP não encontrado.", error_code: "CEP_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "Pessoa Física",
-    method: "GET",
-    path: "/faif/cpf/{cpf}&{nis}",
-    params: [
-      { name: "cpf", in: "path", type: "string", example: "12345678901", required: true },
-      { name: "nis", in: "path", type: "string", example: "987654321", required: true }
-    ],
-    requestSample: "GET /faif/cpf/12345678901&987654321",
-    responseSample: { nome: "Maria", cpf: "12345678901", nis: "987654321" },
-    errorSample: { error: "Pessoa física não encontrada.", error_code: "PESSOA_FISICA_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "Pessoa Jurídica",
-    method: "GET",
-    path: "/faif/cnpj/{cnpj}",
-    params: [{ name: "cnpj", in: "path", type: "string", example: "12345678000195", required: true }],
-    requestSample: "GET /faif/cnpj/12345678000195",
-    responseSample: { cnpj: "12345678000195", nome: "ACME S/A", fantasia: "ACME" },
-    errorSample: { error: "CNPJ não encontrado.", error_code: "CNPJ_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "Serviços — Órgão",
-    method: "GET",
-    path: "/faif/servicos/orgao/{cod}",
-    params: [{ name: "cod", in: "path", type: "string", example: "123", required: true }],
-    requestSample: "GET /faif/servicos/orgao/123",
-    responseSample: { ok: true, data: { id: 123, sigla: "MIN-EX", nome: "Ministério Exemplo" } },
-    errorSample: { error: "Código SIORG não encontrado.", error_code: "SIORG_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "Serviços — Serviço",
-    method: "GET",
-    path: "/faif/servicos/servico/{cod}",
-    params: [{ name: "cod", in: "path", type: "string", example: "456", required: true }],
-    requestSample: "GET /faif/servicos/servico/456",
-    responseSample: { ok: true, data: { id: 456, titulo: "Emissão de certidão" } },
-    errorSample: { error: "Código SIORG não encontrado.", error_code: "SIORG_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "Transparência — Emendas",
-    method: "GET",
-    path: "/faif/transparencia/emendas/{page}",
-    params: [
-      { name: "page", in: "path", type: "integer", example: "1", required: true },
-      { name: "codigoEmenda", in: "query", type: "string", example: "20220001", required: false },
-      { name: "numeroEmenda", in: "query", type: "string", example: "1", required: false },
-      { name: "nomeAutor", in: "query", type: "string", example: "Maria", required: false },
-      { name: "ano", in: "query", type: "integer", example: "2022", required: false }
-    ],
-    requestSample: "GET /faif/transparencia/emendas/1?ano=2022&nomeAutor=Maria",
-    responseSample: { ok: true, data: [{ codigoEmenda: "20220001", nomeAutor: "MARIA", ano: "2022", valor: 150000 }] },
-    errorSample: { error: "Nenhuma emenda encontrada.", error_code: "EMENDA_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "Transparência — Servidores",
-    method: "GET",
-    path: "/faif/transparencia/servidores",
-    params: [
-      { name: "nome", in: "query", type: "string", example: "Silva", required: true },
-      { name: "pagina", in: "query", type: "integer", example: "1", required: false }
-    ],
-    requestSample: "GET /faif/transparencia/servidores?nome=Silva&pagina=1",
-    responseSample: { ok: true, data: [{ nome: "Carlos Silva", vinculo: "Servidor público", cargo: "Analista" }] },
-    errorSample: { error: "Nenhum servidor encontrado para este nome.", error_code: "SERVIDOR_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "CGU — Lista",
-    method: "GET",
-    path: "/faif/cgu",
-    params: [{ name: "q", in: "query", type: "string", example: "saude", required: false }],
-    requestSample: "GET /faif/cgu?q=saude",
-    responseSample: [{ id: "abcd-1234", titulo: "Dados de Saúde", descricao: "Conjunto de dados..." }],
-    errorSample: { error: "Nenhum conjunto de dados encontrado.", error_code: "DADOS_NOT_FOUND" }
-  },
-
-  {
-    utilidade: "CGU — Detalhe",
-    method: "GET",
-    path: "/faif/cgu/{id}",
-    params: [{ name: "id", in: "path", type: "string", example: "abcd-1234", required: true }],
-    requestSample: "GET /faif/cgu/abcd-1234",
-    responseSample: { id: "abcd-1234", title: "Dados de Saúde", notes: "Descrição completa" },
-    errorSample: { error: "Conjunto de dados não encontrado.", error_code: "DADOS_ID_NOT_FOUND" }
-  },
-
-  // aqui há de ser mudado
-
-    {
-    utilidade: "IBGE",
-    method: "GET",
-    path: "/faif/ibge?q={termo}",
-    params: [],
-    requestSample: "GET /faif/cgu/abcd-1234",
-    responseSample: { id: "abcd-1234", title: "Dados de Saúde", notes: "Descrição completa" },
-    errorSample: { error: "Conjunto de dados não encontrado.", error_code: "DADOS_ID_NOT_FOUND" }
+    groupName: 'Portal da Transparência',
+    routes: [
+      {
+        utilidade: "Pessoa Física (CPF & NIS)",
+        method: "GET",
+        path: "/faif/transparencia/pessoa-fisica/{cpf}/{nis}",
+        description: "Consulta dados de uma pessoa física. Requer autenticação.",
+        headers: [{ name: 'chave-api-dados', required: true }],
+        params: [
+          { name: "cpf", in: "path", type: "string", example: "11122233344", required: true },
+          { name: "nis", in: "path", type: "string", example: "55566677788", required: true }
+        ],
+        responseSample: { ok: true, data: [{ id: 0, pessoa: { cpfFormatado: "string", nis: "string", nome: "string" }, informacoesAdicionais: "string" }] },
+        errorSample: { ok: false, error: { code: "PESSOA_FISICA_NOT_FOUND", message: "Pessoa física não encontrada.", details: "..." } }
+      },
+      {
+        utilidade: "Busca de Servidores",
+        method: "GET",
+        path: "/faif/transparencia/servidores",
+        description: "Busca servidores públicos por nome. Requer autenticação.",
+        headers: [{ name: 'chave-api-dados', required: true }],
+        params: [
+          { name: "nome", in: "query", type: "string", example: "Joao Silva", required: true },
+          { name: "pagina", in: "query", type: "integer", example: "1", required: false }
+        ],
+        responseSample: { ok: true, data: [{ id: 0, nome: "string", cpfFormatado: "string", vinculo: "string", orgaoLotacao: "string" }] },
+        errorSample: { ok: false, error: { code: "SERVIDOR_NOT_FOUND", message: "Nenhum servidor encontrado para este nome.", details: "nome=Joao Silva" } }
+      },
+      {
+        utilidade: "Busca de Emendas",
+        method: "GET",
+        path: "/faif/transparencia/emendas/{page}",
+        description: "Busca emendas parlamentares com filtros. Requer autenticação.",
+        headers: [{ name: 'chave-api-dados', required: true }],
+        params: [
+          { name: "page", in: "path", type: "integer", example: "1", required: true },
+          { name: "ano", in: "query", type: "integer", example: "2025", required: false },
+          { name: "nomeAutor", in: "query", type: "string", example: "Maria", required: false }
+        ],
+        responseSample: { ok: true, data: [{ ano: "string", autor: "string", codigoEmenda: "string", localidadeDoGasto: "string", numeroEmenda: "string", tipoEmenda: "string", valorEmpenhado: "string", valorLiquidado: "string", valorPago: "string" }] },
+        errorSample: { ok: false, error: { code: "INVALID_PAGE", message: "Parâmetro 'page' deve ser inteiro >= 1.", details: { page: "zero" } } }
+      }
+    ]
   }
 ];
 
-/* Helpers */
-function el(tag, props={}, children=[]) {
-  const e = document.createElement(tag);
-  for (const k in props) e.setAttribute(k, props[k]);
-  if (typeof children === 'string') e.textContent = children;
-  else children.forEach(c => e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
-  return e;
-}
+// ===================================================================================
+//  LÓGICA DA PÁGINA
+//  Código responsável pela interatividade e renderização.
+// ===================================================================================
 
-/* Populate right list (routesList) */
-const list = document.getElementById('routesList');
-ROUTES.forEach((r, idx) => {
-  const badge = el('span', { class: 'badge bg-light text-dark me-2' }, [`${r.method}`]);
-  const title = el('div', { class: 'fw-bold' }, [r.utilidade]);
-  const path = el('div', { class: 'small text-muted' }, [r.path]);
-  const container = el('div', { class: 'list-group-item list-group-item-action d-flex justify-content-between align-items-start route-item' });
-  container.appendChild(el('div', {}, [title, path]));
-  container.appendChild(el('div', { class: 'text-end small text-muted' }, [String(Array.isArray(r.responseSample) ? r.responseSample.length + ' items' : 'obj')]));
-  container.dataset.index = idx;
-  container.addEventListener('click', () => selectRoute(idx));
-  list.appendChild(container);
-});
+document.addEventListener('DOMContentLoaded', () => {
+  const routesListEl = document.getElementById('routesList');
+  let flatRoutes = [];
 
-/* Headers management */
-const headersStore = {};
-document.getElementById('addHeaderBtn').addEventListener('click', () => {
-  const k = document.getElementById('authHeaderKey').value.trim();
-  const v = document.getElementById('authHeaderValue').value.trim();
-  if (!k || !v) return;
-  headersStore[k] = v;
-  renderHeaders();
-  document.getElementById('authHeaderKey').value = '';
-  document.getElementById('authHeaderValue').value = '';
-});
+  API_ENDPOINTS.forEach(group => {
+    const header = document.createElement('div');
+    header.className = 'group-header';
+    header.textContent = group.groupName;
+    routesListEl.appendChild(header);
+    
+    group.routes.forEach(route => {
+      const routeIndex = flatRoutes.length;
+      flatRoutes.push(route);
 
-function renderHeaders() {
-  const elList = document.getElementById('customHeadersList');
-  elList.innerHTML = '';
-  for (const k in headersStore) {
-    const row = el('div', { class: 'd-flex justify-content-between small mb-1' });
-    row.appendChild(el('div', {}, [`${k}: ${headersStore[k]}`]));
-    const rm = el('button', { class: 'btn btn-sm btn-outline-light btn-close' });
-    rm.title = 'Remover';
-    rm.addEventListener('click', () => { delete headersStore[k]; renderHeaders(); });
-    row.appendChild(rm);
-    elList.appendChild(row);
-  }
-}
-
-/* select route */
-let currentIndex = 0;
-function selectRoute(idx) {
-  const r = ROUTES[idx];
-  currentIndex = idx;
-  document.getElementById('panelEndpoint').textContent = r.path;
-  document.getElementById('endpointHint').textContent = `${r.method} ${r.path}`;
-  const mb = document.getElementById('methodBadge');
-  mb.textContent = r.method;
-  mb.className = 'method-badge ' + (r.method === 'GET' ? 'method-get' : 'method-post');
-
-  // build accordion for params
-  const acc = document.getElementById('paramAccordion');
-  acc.innerHTML = '';
-  if (!r.params || r.params.length === 0) {
-    acc.appendChild(el('div', { class: 'small text-white-50' }, ['Sem parâmetros']));
-  } else {
-    r.params.forEach((p, i) => {
-      const id = `acc-${idx}-${i}`;
-      const item = el('div', { class: 'accordion-item', role: 'presentation' });
-      const h = el('h2', { class: 'accordion-header', id: id + '-h' });
-      const btn = el('button', { class: 'accordion-button collapsed', type: 'button', 'data-bs-toggle':'collapse', 'data-bs-target': '#' + id, 'aria-expanded':'false', 'aria-controls': id }, []);
-      btn.appendChild(el('div', { class: 'me-3' }, [el('span', { class: 'param-type' }, [p.in])]));
-      btn.appendChild(el('div', {}, [el('div', { class: 'fw-bold' }, [p.name]), el('div', { class: 'small text-muted' }, [`type: ${p.type} ${p.required ? '• required' : ''}`])]));
-      h.appendChild(btn);
-      item.appendChild(h);
-
-      const body = el('div', { id: id, class: 'accordion-collapse collapse', 'data-bs-parent': '#paramAccordion' });
-      const bodyB = el('div', { class: 'accordion-body small' });
-      // details + input
-      bodyB.appendChild(el('div', {}, [`Exemplo: ${p.example || '-'}`]));
-      const input = el('input', { class: 'form-control form-control-sm mt-2', 'data-param': p.name, placeholder: p.example || '' });
-      bodyB.appendChild(input);
-      // note where param goes
-      bodyB.appendChild(el('div', { class: 'small text-muted mt-2' }, [`Local: ${p.in}`]));
-      body.appendChild(bodyB);
-      item.appendChild(body);
-      acc.appendChild(item);
+      const item = document.createElement('a');
+      item.href = '#';
+      item.className = 'list-group-item list-group-item-action route-item';
+      item.dataset.index = routeIndex;
+      item.innerHTML = `
+        <div class="d-flex w-100 justify-content-between">
+          <strong class="mb-1">${route.utilidade}</strong>
+          <span class="method-get">${route.method}</span>
+        </div>
+        <small class="text-white-50 text-break">${route.path}</small>
+      `;
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        selectRoute(routeIndex);
+      });
+      routesListEl.appendChild(item);
     });
+  });
+
+  const headersStore = {};
+  let currentIndex = 0;
+
+  function selectRoute(idx) {
+    const route = flatRoutes[idx];
+    if (!route) return;
+    currentIndex = idx;
+
+    document.getElementById('panelEndpoint').textContent = route.path;
+    document.getElementById('endpointDescription').textContent = route.description;
+    
+    const mb = document.getElementById('methodBadge');
+    mb.textContent = route.method;
+    mb.className = `method-get`; // Apenas GET por enquanto
+
+    // Required headers hint
+    const requiredHeadersEl = document.getElementById('requiredHeaders');
+    if (route.headers && route.headers.length > 0) {
+        const required = route.headers.filter(h => h.required).map(h => `<code>${h.name}</code>`).join(', ');
+        if (required) {
+            requiredHeadersEl.innerHTML = `<strong>Header Obrigatório:</strong> ${required}. Adicione na seção "Headers Customizados".`;
+            requiredHeadersEl.style.display = 'block';
+        }
+    } else {
+        requiredHeadersEl.style.display = 'none';
+    }
+
+    // Build parameter inputs
+    const acc = document.getElementById('paramAccordion');
+    acc.innerHTML = '';
+    if (!route.params || route.params.length === 0) {
+      acc.innerHTML = `<div class="small text-white-50 p-2">Sem parâmetros de rota.</div>`;
+    } else {
+      route.params.forEach((p, i) => {
+        const inputId = `param-input-${idx}-${i}`;
+        const isRequired = p.required ? ' <span class="text-danger">*</span>' : '';
+        const accordionItem = document.createElement('div');
+        accordionItem.className = 'accordion-item bg-dark border-secondary';
+        accordionItem.innerHTML = `
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${idx}-${i}">
+              <span class="param-type me-3">${p.in}</span>
+              <strong>${p.name}${isRequired}</strong>
+            </button>
+          </h2>
+          <div id="collapse-${idx}-${i}" class="accordion-collapse collapse" data-bs-parent="#paramAccordion">
+            <div class="accordion-body">
+              <div class="small text-white-50 mb-2">Tipo: <code>${p.type}</code></div>
+              <input type="text" class="form-control form-control-sm bg-dark text-white" id="${inputId}" data-param-name="${p.name}" data-param-in="${p.in}" placeholder="Ex: ${p.example || ''}">
+            </div>
+          </div>
+        `;
+        acc.appendChild(accordionItem);
+      });
+    }
+    
+    document.getElementById('responseJson').textContent = JSON.stringify(flatRoutes[currentIndex].responseSample, null, 2);
+    buildCurlSample();
   }
 
-  // body / extra query reset
-  document.getElementById('bodyInput').value = '';
-  document.getElementById('extraQuery').value = '';
-  // set response sample & curl
-  document.getElementById('responseJson').textContent = JSON.stringify(r.responseSample, null, 2);
-  buildCurlSample();
-}
+  function buildCurlSample() {
+    const route = flatRoutes[currentIndex];
+    let path = route.path;
+    const queryParams = [];
+    
+    document.querySelectorAll('#paramAccordion input').forEach(input => {
+      const { paramName, paramIn } = input.dataset;
+      const value = input.value.trim() || input.placeholder.replace('Ex: ', '');
 
-/* Build curl sample based on form (uses BASE_URL) */
-function buildCurlSample() {
-  const r = ROUTES[currentIndex];
-  const baseUrl = BASE_URL;
-  let path = r.path;
-  // replace path params with values (if provided) or {example}
-  const inputs = document.querySelectorAll('[data-param]');
-  const collected = {};
-  inputs.forEach(i => { collected[i.dataset.param] = i.value || ''; });
-  (r.params||[]).forEach(p => {
-    if (p.in === 'path') {
-      const val = collected[p.name] || p.example || `{${p.name}}`;
-      path = path.replace(`{${p.name}}`, encodeURIComponent(val));
+      if (paramIn === 'path') {
+        path = path.replace(`{${paramName}}`, encodeURIComponent(value));
+      } else if (paramIn === 'query') {
+        queryParams.push(`${encodeURIComponent(paramName)}=${encodeURIComponent(value)}`);
+      }
+    });
+    
+    const finalUrl = BASE_URL + path + (queryParams.length > 0 ? `?${queryParams.join('&')}` : '');
+    
+    let headersPart = '';
+    for (const key in headersStore) {
+        headersPart += ` \\\n     -H "${key}: ${headersStore[key]}"`;
     }
-  });
-  // query string from query params inputs
-  const qsParts = [];
-  (r.params||[]).forEach(p => {
-    if (p.in === 'query') {
-      const v = collected[p.name] || p.example || '';
-      if (v) qsParts.push(`${encodeURIComponent(p.name)}=${encodeURIComponent(v)}`);
-    }
-  });
-  const extra = document.getElementById('extraQuery').value.trim();
-  if (extra) qsParts.push(extra);
-  const qs = qsParts.length ? ('?' + qsParts.join('&')) : '';
-  const url = baseUrl + path + qs;
 
-  // headers
-  const headers = Object.assign({}, headersStore);
-  headers['Accept'] = 'application/json';
-  const headerParts = Object.entries(headers).map(([k,v]) => `-H "${k}: ${v}"`).join(' \\\n  ');
-
-  const method = r.method;
-  const body = document.getElementById('bodyInput').value.trim();
-  const dataPart = (body && (method !== 'GET')) ? `-d '${body.replace(/'/g, "'\\''")}'` : '';
-  const curl = `curl -X ${method} \\\n  ${headerParts} \\\n  "${url}" ${dataPart}`.trim();
-  document.getElementById('curlSample').textContent = curl;
-}
-
-/* Try it — perform fetch (uses BASE_URL) */
-document.getElementById('tryBtn').addEventListener('click', async () => {
-  const r = ROUTES[currentIndex];
-  const baseUrl = BASE_URL;
-  let path = r.path;
-
-  // collect inputs
-  const inputs = document.querySelectorAll('[data-param]');
-  const collected = {};
-  inputs.forEach(i => { collected[i.dataset.param] = i.value || ''; });
-
-  // validate required path params
-  for (const p of (r.params||[])) {
-    if (p.required && p.in === 'path' && !collected[p.name]) {
-      document.getElementById('responseJson').textContent = JSON.stringify({ error: `Missing path param: ${p.name}` }, null, 2);
-      return;
-    }
+    document.getElementById('curlSample').textContent = `curl -X ${route.method}${headersPart} \\\n     "${finalUrl}"`;
   }
 
-  // substitute path params
-  (r.params||[]).forEach(p => {
-    if (p.in === 'path') {
-      const val = collected[p.name] || p.example || `{${p.name}}`;
-      path = path.replace(`{${p.name}}`, encodeURIComponent(val));
-    }
-  });
+  document.getElementById('tryBtn').addEventListener('click', async () => {
+    const route = flatRoutes[currentIndex];
+    let path = route.path;
+    const queryParams = [];
+    let validationError = false;
 
-  // build query string
-  const qsParts = [];
-  (r.params||[]).forEach(p => {
-    if (p.in === 'query') {
-      const v = collected[p.name] || p.example || '';
-      if (v) qsParts.push(`${encodeURIComponent(p.name)}=${encodeURIComponent(v)}`);
-    }
-  });
-  const extra = document.getElementById('extraQuery').value.trim();
-  if (extra) qsParts.push(extra);
-  const qs = qsParts.length ? ('?' + qsParts.join('&')) : '';
-  const url = (baseUrl + path + qs);
+    document.querySelectorAll('#paramAccordion input').forEach(input => {
+        const { paramName, paramIn } = input.dataset;
+        const value = input.value.trim();
+        const paramDef = route.params.find(p => p.name === paramName);
 
-  // headers
-  const headers = new Headers();
-  headers.set('Accept', 'application/json');
-  for (const k in headersStore) headers.set(k, headersStore[k]);
+        if (paramDef.required && !value) {
+            alert(`Parâmetro obrigatório "${paramName}" não foi preenchido.`);
+            validationError = true;
+            return;
+        }
 
-  // body
-  let body = null;
-  const bodyTxt = document.getElementById('bodyInput').value.trim();
-  if (bodyTxt && r.method !== 'GET') {
+        if (paramIn === 'path') {
+            path = path.replace(`{${paramName}}`, encodeURIComponent(value || paramDef.example));
+        } else if (paramIn === 'query' && value) {
+            queryParams.push(`${encodeURIComponent(paramName)}=${encodeURIComponent(value)}`);
+        }
+    });
+
+    if (validationError) return;
+
+    const finalUrl = BASE_URL + path + (queryParams.length > 0 ? `?${queryParams.join('&')}` : '');
+    const headers = new Headers({ 'Accept': 'application/json', ...headersStore });
+
+    const metaEl = document.getElementById('meta');
+    const statusBadgeEl = document.getElementById('statusBadge');
+    const responseJsonEl = document.getElementById('responseJson');
+    statusBadgeEl.innerHTML = '<span class="badge bg-info">Requesting...</span>';
+    
     try {
-      body = JSON.parse(bodyTxt);
-      headers.set('Content-Type', 'application/json');
-    } catch (e) {
-      document.getElementById('responseJson').textContent = JSON.stringify({ error: 'Invalid JSON body' }, null, 2);
-      return;
+      const t0 = performance.now();
+      const response = await fetch(finalUrl, { method: route.method, headers });
+      const t1 = performance.now();
+      metaEl.textContent = `Status: ${response.status} ${response.statusText} | Time: ${Math.round(t1 - t0)} ms`;
+
+      const data = await response.json();
+      responseJsonEl.textContent = JSON.stringify(data, null, 2);
+      statusBadgeEl.innerHTML = `<span class="badge ${response.ok ? 'bg-success' : 'bg-warning text-dark'}">${response.status}</span>`;
+    } catch (error) {
+      metaEl.textContent = `Status: Network Error`;
+      responseJsonEl.textContent = `Erro na requisição. Verifique o console (F12) para detalhes de CORS ou problemas de rede.\n\n${error}`;
+      statusBadgeEl.innerHTML = '<span class="badge bg-danger">FAIL</span>';
     }
+  });
+
+  // Headers management
+  document.getElementById('addHeaderBtn').addEventListener('click', () => {
+    const keyEl = document.getElementById('authHeaderKey');
+    const valEl = document.getElementById('authHeaderValue');
+    const key = keyEl.value.trim();
+    const val = valEl.value.trim();
+    if (key && val) {
+        headersStore[key] = val;
+        keyEl.value = '';
+        valEl.value = '';
+        renderHeaders();
+        buildCurlSample();
+    }
+  });
+
+  function renderHeaders() {
+      const listEl = document.getElementById('customHeadersList');
+      listEl.innerHTML = '';
+      Object.entries(headersStore).forEach(([key, value]) => {
+          const item = document.createElement('div');
+          item.className = 'd-flex justify-content-between align-items-center my-1';
+          item.innerHTML = `<code>${key}: ${value}</code>`;
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'btn-close btn-close-white ms-2';
+          removeBtn.style.height = '0.5em';
+          removeBtn.style.width = '0.5em';
+          removeBtn.onclick = () => {
+              delete headersStore[key];
+              renderHeaders();
+              buildCurlSample();
+          };
+          item.appendChild(removeBtn);
+          listEl.appendChild(item);
+      });
   }
-
-  // show curl sample
-  buildCurlSample();
-
-  // update UI
-  const meta = document.getElementById('meta');
-  const statusBadge = document.getElementById('statusBadge');
-  statusBadge.innerHTML = '';
-
-  try {
-    const t0 = performance.now();
-    const resp = await fetch(url, { method: r.method, headers, body: body ? JSON.stringify(body) : undefined });
-    const t1 = performance.now();
-    const timeMs = Math.round(t1 - t0);
-    meta.textContent = `Status: ${resp.status} ${resp.statusText} | Time: ${timeMs} ms`;
-
-    let text;
-    const ct = resp.headers.get('content-type') || '';
-    if (ct.includes('application/json')) {
-      text = await resp.json();
-      document.getElementById('responseJson').textContent = JSON.stringify(text, null, 2);
-    } else {
-      text = await resp.text();
-      document.getElementById('responseJson').textContent = text.slice(0, 10000);
-    }
-
-    // show subtle success/fail indicator
-    if (resp.ok) {
-      statusBadge.innerHTML = '<span class="badge bg-success">OK</span>';
-    } else {
-      statusBadge.innerHTML = '<span class="badge bg-warning text-dark">ERR</span>';
-    }
-
-  } catch (err) {
-    // network/CORS or other
-    document.getElementById('responseJson').textContent = JSON.stringify({ error: String(err) }, null, 2);
-    meta.textContent = 'Status: network error (see response)';
-    statusBadge.innerHTML = '<span class="badge bg-danger">FAIL</span>';
-  }
+  
+  // Initial setup
+  document.querySelectorAll('#paramAccordion, #interactionPanel').forEach(el => el.addEventListener('input', buildCurlSample));
+  selectRoute(0);
 });
-
-/* update curl when extraQuery / body change */
-['extraQuery','bodyInput'].forEach(id => {
-  document.getElementById(id).addEventListener('input', buildCurlSample);
-});
-
-/* initial select */
-selectRoute(1);
 </script>
 </body>
 </html>
